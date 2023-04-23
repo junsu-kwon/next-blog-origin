@@ -1,5 +1,10 @@
 import Hero from '@/components/Hero';
 
+export const metadata = {
+  title: '소개',
+  description: '준수를 소개합니다.',
+};
+
 const TITLE_CLASS = 'text-2xl font-bold text-gray-800 my-2';
 export default function AboutPage() {
   return (

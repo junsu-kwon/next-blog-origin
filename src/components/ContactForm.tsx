@@ -2,38 +2,50 @@
 
 import { ChangeEvent, FormEvent, useState } from 'react';
 import Banner, { BannerData } from './Banner';
+import { sendContactEmail } from '@/service/contact';
+
 type Form = {
   from: string;
   subject: string;
   message: string;
 };
-export default function ContactForm() {
-  const [form, setForm] = useState<Form>({
-    from: '',
-    subject: '',
-    message: '',
-  });
 
+const DEFAULT_DATA = {
+  from: '',
+  subject: '',
+  message: '',
+};
+
+export default function ContactForm() {
+  const [form, setForm] = useState<Form>(DEFAULT_DATA);
   const [banner, setBanner] = useState<BannerData | null>(null);
 
-  const onChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = event.target;
+  const onChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log(form);
-
-    setBanner({
-      state: 'success',
-      message: 'Your message has been sent successfully',
-    });
-
-    setTimeout(() => setBanner(null), 3000);
+    sendContactEmail(form) //
+      .then(() => {
+        setBanner({
+          message: '메일을 성공적으로 보냈습니다.',
+          state: 'success',
+        });
+        setForm(DEFAULT_DATA);
+      })
+      .catch((error) => {
+        setBanner({
+          message: '메일전송에 실패했습니다. 다시 시도해 주세요',
+          state: 'error',
+        });
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setBanner(null);
+        }, 3000);
+      });
   };
 
   return (

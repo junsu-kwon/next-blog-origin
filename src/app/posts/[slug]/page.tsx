@@ -29,3 +29,12 @@ export default async function PostPage({ params: { slug } }: Props) {
     </article>
   );
 }
+
+export async function generateMetadata({ params: { slug } }: Props) {
+  const post = await getPostData(slug);
+  const { title, description } = post;
+  return {
+    title,
+    description,
+  };
+}
